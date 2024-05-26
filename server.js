@@ -76,9 +76,39 @@ app.get('/all-sites',(req,res)=>{
         return res.json(err);
       }
       if (results.length > 0) {
-        return res.json({ message: 'Login successful', redirect: '/maindash' });
+        return res.json({ message: 'Login successful', redirect: '/who_are_you' });
       } else {
         return res.status(401).json({ message: 'Invalid credentials' });
+      }
+    });
+  });
+
+
+  //profile icon
+  app.post('/userdetails', (req, res) => {
+    console.log("Request received at /userdetails endpoint");  
+  
+    const { email } = req.body; 
+    console.log("Received request for user details with email:", email);
+  
+    if (!email) {
+      console.log("No email provided");
+      return res.status(400).json({ error: 'Username not provided' });
+    }
+  
+    const sql = "SELECT email FROM users WHERE email = ?";
+    db.query(sql, [email], (err, results) => {
+      if (err) {
+        console.error('Database query error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      if (results.length > 0) {
+        const userData = results[0];
+        console.log("User found:", userData);
+        return res.json(userData);
+      } else {
+        console.log("User not found");
+        return res.status(404).json({ message: 'User not found' });
       }
     });
   });
